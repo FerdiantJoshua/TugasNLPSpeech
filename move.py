@@ -11,6 +11,6 @@ except IndexError:
     exit
 
 for path, dirs, files in os.walk(src_path):
-  for file in files:
-    if '.wav' in file:
-      os.rename(f'{path}/{file}', f'{dest_path}/{file[:-6].lower()}/{file}')
+    for file in files:
+        if '.wav' in file:
+            os.rename(f'{path}/{file}', f'{dest_path}/{file[:-6].lower()}/{file}')
