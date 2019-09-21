@@ -33,10 +33,15 @@ except FileExistsError:
     pass
 
 for folder in os.listdir(input_dir):
+    if(folder == '.DS_Store'):
+        continue
     for voice in os.listdir(f'{input_dir}/{folder}'):
         print(voice)
         if('.wav' in voice):
-            snd = parselmouth.Sound(f'{input_dir}/{folder}/{voice}')
+            try:
+                snd = parselmouth.Sound(f'{input_dir}/{folder}/{voice}')
+            except parselmouth.PraatError:
+                continue
             pitch = snd.to_pitch()
             formant = snd.to_formant_burg()
             pitch_values = pitch.selected_array['frequency']
