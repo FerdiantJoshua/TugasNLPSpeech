@@ -19,5 +19,5 @@ Notebook for training
 ## extract_mfcc.py
 ### Usage
 ```sh
-python extract_mfcc.py {path_to dir_containing_wav_files} {path_to_output_dirs}
+python extract_mfcc.py {path_to dir_containing_wav_files} {path_to_output_dir}
 ```

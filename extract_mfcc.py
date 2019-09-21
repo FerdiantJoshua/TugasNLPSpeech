@@ -51,7 +51,7 @@ def main() -> None:
         print('Usage:')
         print('\targ1 = input_dir')
         print('\targ2 = output_dir')
-        print('No specific directories specified. Using default value')
+        print('No specific directories specified. Using default values')
         input_dir = DEFAULT_INPUT_DIR
         output_dir = DEFAULT_OUTPUT_DIR
 
