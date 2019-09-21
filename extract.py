@@ -77,13 +77,13 @@ for folder in os.listdir(input_dir):
                 if(str(f5) != "nan"):
                     nformants += 1
                 formant_tuple.append((time, nformants, f1, b1, f2, b2, f3, b3, f4, b4, f5, b5))
-            name_pitch = "pitch/" + "pitch-" + voice.replace('.wav','').upper() + ".csv"
+            name_pitch = output_dir + "/pitch/" + "pitch-" + voice.replace('.wav','').upper() + ".csv"
             with open(name_pitch, 'w', newline='') as pitchfile:
                 csv_out=csv.writer(pitchfile)
                 csv_out.writerow(['Time','F0'])
                 for row in pitch_tuple:
                     csv_out.writerow(row)
-            name_formant = "formant/" + "formant-" + voice.replace('.wav','').upper() + ".csv"
+            name_formant = output_dir + "/formant/" + "formant-" + voice.replace('.wav','').upper() + ".csv"
             with open(name_formant, 'w', newline='') as formantfile:
                 csv_out=csv.writer(formantfile)
                 csv_out.writerow(['time(s)','nformants','F1(Hz)','B1(Hz)','F2(Hz)','B2(Hz)','F3(Hz)','B3(Hz)','F4(Hz)','B4(Hz)','F5(Hz)','B5(Hz)'])
