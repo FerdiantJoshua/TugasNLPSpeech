@@ -14,11 +14,10 @@ DEFAULT_INPUT_DIR = 'raw_wav'
 DEFAULT_OUTPUT_DIR = 'raw_csv'
 
 def get_non_silence_idx_range_from_pitch(wav_name:str, pitch_csv_path:str) -> [int, int]:
-    MIN_LENGTH = 12
-
     corresponding_pitch_csv = f'pitch-{wav_name.replace(".wav", ".csv")}'
     df = pd.read_csv(f'{pitch_csv_path}/{corresponding_pitch_csv}')
 
+    candidate = []
     start_idx = 0
     end_idx = df.shape[0] + 1
     count = 0
@@ -32,13 +31,13 @@ def get_non_silence_idx_range_from_pitch(wav_name:str, pitch_csv_path:str) -> [i
             count += 1
             end_idx = i
         elif not is_counting and count > 0:
-            if count < MIN_LENGTH:
-                count = 0
-                start_idx = 0
-                end_idx = 0
-            else:
-                break
-    return start_idx, end_idx
+            candidate.append((start_idx, end_idx))
+            count = 0
+            start_idx = i
+            end_idx = i
+    candidate.append((start_idx, end_idx))
+
+    return max(candidate, key=lambda el: el[1] - el[0])
 
 def convert_pitch_idx_to_mfcc_idx(idx:int):
     OFFSET = 2 
@@ -82,7 +81,7 @@ def main() -> None:
                 except ValueError as e:
                     print(e)
                     continue
-                mfcc_feat = psf.mfcc(sig, rate, numcep=13, nfft=5120)
+                mfcc_feat = psf.mfcc(sig, rate, numcep=13, nfft=4096)
                 mfcc_feat = mfcc_feat[start_idx:end_idx, :]
                 d_mfcc_feat = psf.delta(mfcc_feat, 2)
                 d_d_mfcc_feat = psf.delta(d_mfcc_feat, 2)
