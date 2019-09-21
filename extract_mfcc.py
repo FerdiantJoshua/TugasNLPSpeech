@@ -76,10 +76,13 @@ def main() -> None:
 
                 try:
                     (rate,sig) = wav.read(f'{path}/{file}')
+                    if (len(sig.shape) >= 2):
+                        if (sig.shape[1] == 2):
+                            sig = np.mean(sig, axis=1)
                 except ValueError as e:
                     print(e)
                     continue
-                mfcc_feat = psf.mfcc(sig, rate, numcep=12, nfft=5120)
+                mfcc_feat = psf.mfcc(sig, rate, numcep=13, nfft=5120)
                 mfcc_feat = mfcc_feat[start_idx:end_idx, :]
                 d_mfcc_feat = psf.delta(mfcc_feat, 2)
                 d_d_mfcc_feat = psf.delta(d_mfcc_feat, 2)
@@ -96,11 +99,20 @@ def main() -> None:
                     for i in range(FEATURE_TYPE_COUNT):
                         for j in range(final_mfcc_feat.shape[0] // FEATURE_TYPE_COUNT):
                             if i == 0:
-                                label_name = f'ceps_coef{j+1}'
+                                if j == 0:
+                                    label_name = f'energy_coef'
+                                else:
+                                    label_name = f'ceps_coef{j+1}'
                             elif i == 1:
-                                label_name = f'delta_ceps_coef{j+1}'
+                                if j == 0:
+                                    label_name = f'delta_energy_coef'
+                                else:
+                                    label_name = f'delta_ceps_coef{j+1}'
                             elif i == 2:
-                                label_name = f'delta_delta_ceps_coef{j+1}'
+                                if j == 0:
+                                    label_name = f'delta_delta_energy_coef'
+                                else:
+                                    label_name = f'delta_delta_ceps_coef{j+1}'
                             column_label.append(label_name)
                     csv_out.writerow(column_label)
                     csv_out.writerow(final_mfcc_feat)
