@@ -12,6 +12,7 @@ import scipy.io.wavfile as wav
 
 DEFAULT_INPUT_DIR = 'raw_wav'
 DEFAULT_OUTPUT_DIR = 'raw_csv'
+WINFUNC = lambda x: np.hamming(x)
 
 def get_non_silence_idx_range_from_pitch(wav_name:str, pitch_csv_path:str) -> [int, int]:
     corresponding_pitch_csv = f'pitch-{wav_name.replace(".wav", ".csv")}'
@@ -37,7 +38,9 @@ def get_non_silence_idx_range_from_pitch(wav_name:str, pitch_csv_path:str) -> [i
             end_idx = i
     candidate.append((start_idx, end_idx))
 
-    return max(candidate, key=lambda el: el[1] - el[0])
+    (final_start, final_end) = max(candidate, key=lambda el: el[1] - el[0])
+    (time_start, time_end) = (df.iloc[final_start]['Time'], df.iloc[final_end]['Time'])
+    return time_start, time_end
 
 def convert_pitch_idx_to_mfcc_idx(idx:int):
     OFFSET = 2 
@@ -69,20 +72,20 @@ def main() -> None:
             if('.wav' in file):
                 print(f'Processing {file}...')
                 pitch_csv_path = f'{output_dir}/{PITCH_DIR_NAME}'
-                start_idx, end_idx = get_non_silence_idx_range_from_pitch(file, pitch_csv_path)
-                start_idx = convert_pitch_idx_to_mfcc_idx(start_idx)
-                end_idx = convert_pitch_idx_to_mfcc_idx(end_idx)
+                time_start, time_end = get_non_silence_idx_range_from_pitch(file, pitch_csv_path)
 
                 try:
                     (rate,sig) = wav.read(f'{path}/{file}')
+                    frame_start = int(time_start * rate)
+                    frame_end = int(time_end * rate)
                     if (len(sig.shape) >= 2):
                         if (sig.shape[1] == 2):
                             sig = np.mean(sig, axis=1)
                 except ValueError as e:
                     print(e)
                     continue
-                mfcc_feat = psf.mfcc(sig, rate, numcep=13, nfft=4096)
-                mfcc_feat = mfcc_feat[start_idx:end_idx, :]
+                sig = sig[frame_start:frame_end]
+                mfcc_feat = psf.mfcc(sig, rate, numcep=13, nfft=4096, winfunc=WINFUNC)
                 d_mfcc_feat = psf.delta(mfcc_feat, 2)
                 d_d_mfcc_feat = psf.delta(d_mfcc_feat, 2)
 
