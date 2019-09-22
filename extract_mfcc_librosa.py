@@ -78,6 +78,8 @@ def main() -> None:
                 time_start, time_end = get_non_silence_idx_range_from_pitch(file, pitch_csv_path)
                 
                 sig, rate = librosa.load(f'{path}/{file}', offset=time_start)
+                if ('preemphasis' in dir(librosa.effects)):
+                    sig = librosa.effects.preemphasis(sig)
                 energy = get_energy(sig)
                 try:
                     d_energy = librosa.feature.delta(energy, order=1)
