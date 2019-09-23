@@ -5,7 +5,7 @@
 Used for counting number of sound type (a:100, i:100, u:95... etc.)
 2. extract_mfcc.py  
 Used for extracting mfcc feature from wav files
-3. extract.py  
+3. extract_pitch_formant.py  
 Used for extracting pitch and formant feature from wav files
 4. move.py  
 Used for moving files wav files according to its type (A91.wav -> raw_wav/a/A91.wav... etc.)
